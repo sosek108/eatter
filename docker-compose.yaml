@@ -1,0 +1,10 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:14.3-alpine
+    ports:
+      - 22000:5432
+    environment:
+      - POSTGRES_USER=eatter
+      - POSTGRES_PASSWORD=eatter
+      - POSTGRES_DB=eatter

@@ -1,22 +1,18 @@
+'use server';
 import Layout from '@/components/layout/layout';
-import H1 from '@/components/typography/H1';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { File, ListFilter, PlusCircle } from 'lucide-react';
-import { Dialog, DialogContent, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { PlusCircle } from 'lucide-react';
+import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import IngredientsForm from '@/app/ingredients/components/IngredientsForm';
+import { PrismaClient } from '@prisma/client';
 
-export default function IngredientsPage() {
+export default async function IngredientsPage() {
+  const prisma = new PrismaClient();
+  const ingredients = await prisma.ingredient.findMany();
+  console.log('morwa ingredients', ingredients);
   return (
     <Layout>
       <Dialog>
@@ -27,10 +23,7 @@ export default function IngredientsPage() {
             </Button>
           </DialogTrigger>
         </div>
-        <DialogContent>
-          <DialogTitle>Create ingredient</DialogTitle>
-          <IngredientsForm />
-        </DialogContent>
+        <IngredientsForm />
       </Dialog>
 
       <Card>
