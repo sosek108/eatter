@@ -2,14 +2,16 @@ import Layout from '@/components/layout/layout';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import RecipesForm from '@/app/recipes/components/RecipesForm';
 
 export default function RecipesPage() {
   return (
     <Layout>
+      <RecipesForm />
       <Card>
         <CardHeader className="px-7">
           <CardTitle>Recipes</CardTitle>
-          <CardDescription>Recipe for otter's love 💖</CardDescription>
+          <CardDescription>Recipe for otters&#39; love 💖</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
