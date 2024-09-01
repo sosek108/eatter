@@ -1,31 +1,19 @@
-'use server';
 import Layout from '@/components/layout/layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { PlusCircle } from 'lucide-react';
-import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import IngredientsForm from '@/app/ingredients/components/IngredientsForm';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/db';
 
 export default async function IngredientsPage() {
-  const prisma = new PrismaClient();
   const ingredients = await prisma.ingredient.findMany();
-  console.log('morwa ingredients', ingredients);
+
   return (
     <Layout>
-      <Dialog>
-        <div className="ml-auto flex items-center gap-2">
-          <DialogTrigger asChild>
-            <Button size={'sm'} icon={PlusCircle}>
-              <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Add ingredient</span>
-            </Button>
-          </DialogTrigger>
-        </div>
-        <IngredientsForm />
-      </Dialog>
-
+      <IngredientsForm />
+      {ingredients.map((ingredient) => (
+        <div key={ingredient.id}>{ingredient.name}</div>
+      ))}
       <Card>
         <CardHeader>
           <CardTitle>Ingredients</CardTitle>
