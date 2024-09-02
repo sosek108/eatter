@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import saveIngredient from '@/actions/ingredients';
+import saveIngredient from '@/actions/createIngredient';
 import { PlusCircle } from 'lucide-react';
 
 type Props = {};

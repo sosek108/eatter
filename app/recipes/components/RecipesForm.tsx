@@ -3,20 +3,35 @@ import React, { FunctionComponent, useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Dialog, DialogContent, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import RichText from '@/components/ui/rich-text';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import VariantForm from './VariantForm';
+import createRecipe from '@/actions/recipes';
 
 type Props = {};
 
+export enum RecipeVariantEnum {
+  HUBI = 'hubi',
+  TUSIA = 'tusia',
+}
+
 export const RecipeSchema = z.object({
   name: z.string().min(1, { message: 'Name is required' }),
-  ingredients: z.array(
+  steps: z.string().min(1, { message: 'Steps are required' }),
+  variants: z.array(
     z.object({
-      id: z.string(),
-      amount: z.number(),
+      ingredients: z.array(
+        z.object({
+          ingredient: z.number().min(1, { message: 'Ingredient is required' }),
+          quantity: z.string().min(1, { message: 'Quantity is required' }),
+        }),
+      ),
+      variant: z.string().min(1, { message: 'Variant is required' }),
     }),
   ),
 });
@@ -24,14 +39,43 @@ export const RecipeSchema = z.object({
 export type RecipeType = z.infer<typeof RecipeSchema>;
 
 const RecipesForm: FunctionComponent<Props> = (props) => {
-  const [dialogOpen, setDialogOpen] = useState(true);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const form = useForm<RecipeType>({
     resolver: zodResolver(RecipeSchema),
+    defaultValues: {
+      steps: '<ul><li>🥕 Peel the carrots</li><li>🥔 Peel the potatoes</li></ul>',
+      variants: [
+        {
+          ingredients: [
+            {
+              ingredient: undefined,
+              quantity: '1',
+            },
+          ],
+
+          variant: RecipeVariantEnum.HUBI,
+        },
+        {
+          ingredients: [
+            {
+              ingredient: undefined,
+              quantity: '1',
+            },
+          ],
+          variant: RecipeVariantEnum.TUSIA,
+        },
+      ],
+    },
   });
 
   const onSubmit = async (data: RecipeType) => {
-    setDialogOpen(false);
+    console.log('morwa data', data);
+    await createRecipe(data).then(() => {
+      // setDialogOpen(false);
+    });
   };
+
+  const cloneVariant = (from: number, to: number) => {};
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -43,9 +87,10 @@ const RecipesForm: FunctionComponent<Props> = (props) => {
         </DialogTrigger>
       </div>
       <Form {...form}>
-        <DialogContent>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogTitle>Create recipe</DialogTitle>
-          <form onSubmit={form.handleSubmit(onSubmit)} className={'space-y-4'}>
+          <DialogDescription>Insert data for new recipe</DialogDescription>
+          <form onSubmit={form.handleSubmit(onSubmit, (e) => console.log('morwa', e))} className={'space-y-4'}>
             <FormField
               control={form.control}
               name={'name'}
@@ -54,6 +99,35 @@ const RecipesForm: FunctionComponent<Props> = (props) => {
                   <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input placeholder="🐀 Ratatouille" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Accordion className={'space-y-2'} type={'multiple'} defaultValue={[RecipeVariantEnum.HUBI, RecipeVariantEnum.TUSIA]}>
+              <AccordionItem className={'rounded-md border px-3'} value={RecipeVariantEnum.HUBI}>
+                <AccordionTrigger>Hubi</AccordionTrigger>
+                <AccordionContent>
+                  <VariantForm index={0} variantName={RecipeVariantEnum.HUBI} />
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem className={'rounded-md border px-3'} value={RecipeVariantEnum.TUSIA}>
+                <AccordionTrigger>Tusia</AccordionTrigger>
+                <AccordionContent>
+                  <VariantForm index={1} variantName={RecipeVariantEnum.TUSIA} />
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+
+            <FormField
+              control={form.control}
+              name={'steps'}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Steps</FormLabel>
+                  <FormControl>
+                    <RichText value={field.value} onChange={field.onChange} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
