@@ -1,18 +1,36 @@
 import Layout from '@/components/layout/layout';
 import { prisma } from '@/lib/db';
 import { notFound } from 'next/navigation';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChevronLeft, ChevronRight, Copy, CreditCard, MoreVertical, Truck, Watch } from 'lucide-react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { CreditCard, Watch } from 'lucide-react';
+import RecipeVariant from '@/app/recipes/[id]/components/RecipeVariant';
+import { enrichVariant, sumVariants } from '@/actions/recipes';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import React from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 async function getRecipe(id: number) {
   return prisma.recipe.findUnique({
     where: {
       id,
     },
+    include: {
+      variants: {
+        include: {
+          ingredients: {
+            include: {
+              ingredient: true,
+            },
+          },
+        },
+      },
+    },
   });
 }
+
 export default async function RecipePage({ params }: { params: { id: string } }) {
   const { id } = params;
   const recipe = await getRecipe(+id);
@@ -20,30 +38,62 @@ export default async function RecipePage({ params }: { params: { id: string } })
   if (!recipe) {
     return notFound();
   }
+  const variants = await Promise.all(recipe.variants.map(enrichVariant));
+
+  const summary = await sumVariants(...variants);
 
   return (
     <Layout>
       <div className={'grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3'}>
         <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
           <div className="grid grid-cols-2 gap-4">
-            <Card className="col-span-1 sm:col-span-2">
+            <Card className="col-span-2">
               <CardHeader className="pb-3">
                 <CardTitle>{recipe.name}</CardTitle>
                 <CardDescription>Ut culpa aute pariatur esse enim laboris eu excepteur ipsum do magna voluptate.</CardDescription>
               </CardHeader>
             </Card>
-            <Card className="col-span-2 md:col-span-1">
-              <CardHeader className="pb-3">
-                <CardTitle>Hubi</CardTitle>
-                <CardDescription>Ut culpa aute pariatur esse enim laboris eu excepteur ipsum do magna voluptate.</CardDescription>
-              </CardHeader>
-            </Card>
-            <Card className="col-span-2 md:col-span-1">
-              <CardHeader className="pb-3">
-                <CardTitle>Tusia</CardTitle>
-                <CardDescription>Ut culpa aute pariatur esse enim laboris eu excepteur ipsum do magna voluptate.</CardDescription>
-              </CardHeader>
-            </Card>
+            <Tabs defaultValue="variants" className="col-span-2">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="variants">Variants</TabsTrigger>
+                <TabsTrigger value="summary">Summary</TabsTrigger>
+              </TabsList>
+              <TabsContent value="variants">
+                <div className="grid grid-cols-2 gap-4">
+                  {variants.map((variant) => (
+                    <RecipeVariant variant={variant} key={variant.id} />
+                  ))}
+                </div>
+              </TabsContent>
+              <TabsContent value="summary">
+                <Card className="col-span-2">
+                  <CardHeader className="pb-3">
+                    <CardTitle>Summary</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Table>
+                      <TableHeader className="p-0">
+                        <TableRow>
+                          <TableHead>Ingredient</TableHead>
+                          <TableHead>Quantity</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {summary.map((ingredient) => (
+                          <TableRow key={ingredient.name}>
+                            <TableCell className="font-medium">{ingredient.name}</TableCell>
+                            <TableCell>
+                              {ingredient.quantity} {ingredient.unit} ({ingredient.grams}g)
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
+
             <Card className="col-span-2">
               <CardHeader className="pb-3">
                 <CardTitle>Steps</CardTitle>

@@ -12,13 +12,9 @@ import RichText from '@/components/ui/rich-text';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import VariantForm from './VariantForm';
 import createRecipe from '@/actions/recipes';
+import { translateVariant, VariantEnum } from '@/lib/dicts';
 
 type Props = {};
-
-export enum RecipeVariantEnum {
-  HUBI = 'hubi',
-  TUSIA = 'tusia',
-}
 
 export const RecipeSchema = z.object({
   name: z.string().min(1, { message: 'Name is required' }),
@@ -53,7 +49,7 @@ const RecipesForm: FunctionComponent<Props> = (props) => {
             },
           ],
 
-          variant: RecipeVariantEnum.HUBI,
+          variant: VariantEnum.HUBERT,
         },
         {
           ingredients: [
@@ -62,14 +58,13 @@ const RecipesForm: FunctionComponent<Props> = (props) => {
               quantity: '1',
             },
           ],
-          variant: RecipeVariantEnum.TUSIA,
+          variant: VariantEnum.MARTA,
         },
       ],
     },
   });
 
   const onSubmit = async (data: RecipeType) => {
-    console.log('morwa data', data);
     await createRecipe(data).then(() => {
       // setDialogOpen(false);
     });
@@ -90,7 +85,7 @@ const RecipesForm: FunctionComponent<Props> = (props) => {
         <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogTitle>Create recipe</DialogTitle>
           <DialogDescription>Insert data for new recipe</DialogDescription>
-          <form onSubmit={form.handleSubmit(onSubmit, (e) => console.log('morwa', e))} className={'space-y-4'}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className={'space-y-4'}>
             <FormField
               control={form.control}
               name={'name'}
@@ -105,17 +100,17 @@ const RecipesForm: FunctionComponent<Props> = (props) => {
               )}
             />
 
-            <Accordion className={'space-y-2'} type={'multiple'} defaultValue={[RecipeVariantEnum.HUBI, RecipeVariantEnum.TUSIA]}>
-              <AccordionItem className={'rounded-md border px-3'} value={RecipeVariantEnum.HUBI}>
-                <AccordionTrigger>Hubi</AccordionTrigger>
+            <Accordion className={'space-y-2'} type={'multiple'} defaultValue={[VariantEnum.HUBERT, VariantEnum.MARTA]}>
+              <AccordionItem className={'rounded-md border px-3'} value={VariantEnum.HUBERT}>
+                <AccordionTrigger>{translateVariant(VariantEnum.HUBERT)}</AccordionTrigger>
                 <AccordionContent>
-                  <VariantForm index={0} variantName={RecipeVariantEnum.HUBI} />
+                  <VariantForm index={0} variantName={VariantEnum.HUBERT} />
                 </AccordionContent>
               </AccordionItem>
-              <AccordionItem className={'rounded-md border px-3'} value={RecipeVariantEnum.TUSIA}>
-                <AccordionTrigger>Tusia</AccordionTrigger>
+              <AccordionItem className={'rounded-md border px-3'} value={VariantEnum.MARTA}>
+                <AccordionTrigger>{translateVariant(VariantEnum.MARTA)}</AccordionTrigger>
                 <AccordionContent>
-                  <VariantForm index={1} variantName={RecipeVariantEnum.TUSIA} />
+                  <VariantForm index={1} variantName={VariantEnum.MARTA} />
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
