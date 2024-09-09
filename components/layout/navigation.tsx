@@ -28,6 +28,7 @@ const Navigation: FunctionComponent<Props> = (props) => {
         <NavLink href="/" text="Dashboard" />
         <NavLink href="/recipes" text="Recipes" />
         <NavLink href="/ingredients" text="Ingredients" />
+        <NavLink href="/calendar" text="Calendar" />
       </nav>
       <Sheet>
         <SheetTrigger asChild>

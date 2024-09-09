@@ -8,9 +8,6 @@ import { enrichVariant, sumVariants } from '@/actions/recipes';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 
 async function getRecipe(id: number) {
   return prisma.recipe.findUnique({
