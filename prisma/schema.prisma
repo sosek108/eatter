@@ -23,7 +23,7 @@ model Ingredient {
 }
 
 model Recipe {
-  id    Int     @id @default(autoincrement())
+  id    Int    @id @default(autoincrement())
   name  String
   steps String
 
@@ -37,6 +37,7 @@ model RecipeVariant {
   recipeId    Int
   recipe      Recipe             @relation(fields: [recipeId], references: [id])
   ingredients RecipeIngredient[]
+  days        DayRecipe[]
 }
 
 model RecipeIngredient {
@@ -46,4 +47,15 @@ model RecipeIngredient {
   quantity     Float
   variant      RecipeVariant @relation(fields: [variantId], references: [id])
   ingredient   Ingredient    @relation(fields: [ingredientId], references: [id])
+}
+
+model DayRecipe {
+  id        Int      @id @default(autoincrement())
+  variantId Int
+  meal      String
+  date      DateTime
+
+  variant RecipeVariant @relation(fields: [variantId], references: [id])
+
+  @@index([date])
 }
