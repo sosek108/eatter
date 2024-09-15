@@ -1,4 +1,8 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+This is simple application made with NextJS, shadcn-ui, tailwind, postgres and passion.
+
+## Goal of application
+
+There are many cookbook applications which allows you schedule your meal plan, but all of them lack functionality of planning different plans for couples. This application will hold many variants of single recipe and will help create shopping list.
 
 ## Getting Started
 
